@@ -20,8 +20,11 @@ export default {
     },
     extend: {
       fontFamily: {
+        montserrat: ['Montserrat', ...fontFamily.sans],
+        nunito: ['Nunito', ...fontFamily.sans],
         inter: ['Inter', ...fontFamily.sans],
         manrope: ['Manrope', ...fontFamily.sans],
+        'be-vietnam-pro': ['"Be Vietnam Pro"', ...fontFamily.sans],
       },
       borderRadius: {
         lg: 'var(--radius)',

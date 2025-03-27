@@ -1,0 +1,142 @@
+---
+description: Guidelines for the application layout system and structure
+globs: src/components/layout/**/*.tsx, src/routes/**/*.tsx
+alwaysApply: false
+---
+
+# Layout System Guidelines
+
+The application uses a structured layout system to ensure consistent user experience across all pages.
+
+## Layout Structure
+
+### 1. Main Layout Components
+
+The primary layout components are located in `src/components/layout/`:
+
+- `AppSidebar.tsx` - Main sidebar navigation
+- `Header.tsx` - Top header bar
+- `Main.tsx` - Main content area
+- `NavGroup.tsx` - Sidebar navigation group
+- `NavUser.tsx` - User information in navigation
+- `TeamSwitcher.tsx` - Team switching component
+- `TopNav.tsx` - Top navigation menu
+
+### 2. Layout Composition
+
+Layouts are composed in route components to create consistent page structures:
+
+```tsx
+// Example of layout composition in a route component
+function DashboardPage() {
+  return (
+    <>
+      <Header />
+      <div className="flex">
+        <AppSidebar />
+        <Main>
+          <DashboardContent />
+        </Main>
+      </div>
+    </>
+  )
+}
+```
+
+## Layout Patterns
+
+### 1. Authenticated Layout
+
+Used for protected routes that require authentication:
+
+- Full sidebar with navigation
+- Header with user profile and actions
+- Main content area with padding
+
+### 2. Auth Layout
+
+Used for authentication pages (sign in, sign up, etc.):
+
+- Centered content
+- No sidebar or main navigation
+- Branded elements and authentication forms
+
+### 3. Error Layout
+
+Used for error pages (404, 500, etc.):
+
+- Minimal layout
+- Clear error messaging
+- Navigation back to safe areas
+
+## Layout Components
+
+### 1. Sidebar Component
+
+The sidebar (`AppSidebar`) is a key navigation element:
+
+- Contains app logo and branding
+- Displays main navigation groups
+- Shows user information and settings
+- Supports collapsed and expanded states
+
+### 2. Header Component
+
+The header (`Header`) provides context and actions:
+
+- Page title and breadcrumbs
+- Search functionality
+- User profile and quick actions
+- Notifications and help access
+
+### 3. Main Content Area
+
+The main content area (`Main`) contains page-specific content:
+
+- Provides consistent padding and spacing
+- Handles scrolling behavior
+- Adapts to sidebar state changes
+
+## Responsive Behavior
+
+### 1. Mobile Layout
+
+For small screens:
+
+- Collapsible sidebar (hidden by default)
+- Simplified header with essential elements
+- Stacked content layout
+- Touch-friendly navigation
+
+### 2. Tablet Layout
+
+For medium screens:
+
+- Compact sidebar
+- Adjusted spacing and element sizes
+- Simplified navigation patterns
+
+### 3. Desktop Layout
+
+For large screens:
+
+- Full sidebar with expanded navigation
+- Complete header with all features
+- Optimized content display
+
+## Best Practices
+
+1. **Consistent Spacing**:
+   - Use Tailwind's spacing scale consistently
+   - Maintain consistent padding and margins
+   - Ensure proper content alignment
+
+2. **Responsive Considerations**:
+   - Test layouts at all breakpoints
+   - Ensure critical functions are accessible on all devices
+   - Prioritize content appropriately for different screen sizes
+
+3. **Performance**:
+   - Avoid layout shifts during loading
+   - Minimize layout calculations
+   - Use CSS Grid and Flexbox efficiently 

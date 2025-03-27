@@ -1,0 +1,169 @@
+---
+description: Guidelines for application routing structure and navigation
+globs: src/routes/**/*.tsx, src/main.tsx
+alwaysApply: false
+---
+
+# Routing Structure Guidelines
+
+The application uses TanStack Router for routing and navigation. Understanding the routing structure is crucial for adding new routes or modifying existing ones.
+
+## Routing Architecture
+
+### 1. Router Setup (`src/main.tsx`)
+
+The main entry point configures the router with TanStack Router:
+
+```tsx
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
+
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+  defaultPreload: 'intent',
+  defaultPreloadStaleTime: 0,
+})
+
+// Root component
+<RouterProvider router={router} />
+```
+
+### 2. Route Tree Generation
+
+Routes are automatically generated from the file structure in the `src/routes/` directory:
+
+- `routeTree.gen.ts` - Generated route tree (don't edit directly)
+- Routes are generated using the TanStack Router Vite plugin
+
+## Route Types
+
+The application uses several route types:
+
+1. **Root Route** (`__root.tsx`) - The parent route for all other routes
+
+2. **Protected Routes** (`_authenticated/`) - Routes requiring authentication:
+   - User management
+   - Application features
+   - Settings
+
+3. **Auth Routes** (`(auth)/`) - Authentication-related routes:
+   - Sign In
+   - Sign Up
+   - Password Reset
+
+4. **Error Routes** (`(errors)/`) - Error handling routes:
+   - 404 Not Found
+   - 500 Server Error
+   - 403 Forbidden
+
+## Adding New Routes
+
+When adding new routes:
+
+1. **Choose the Correct Location**:
+   - Protected content: `src/routes/_authenticated/`
+   - Public content: `src/routes/`
+   - Auth flows: `src/routes/(auth)/`
+
+2. **Create Route Files**:
+   - `route.tsx` - Route component with loader and meta data
+   - `index.tsx` - Default component for the route
+
+3. **Route Structure**:
+   ```tsx
+   // Example route.tsx
+   import { createFileRoute } from '@tanstack/react-router'
+   
+   export const Route = createFileRoute('/_authenticated/feature')({
+     component: FeaturePage,
+     loader: ({ context: { queryClient } }) => {
+       // Pre-fetch data if needed
+       return queryClient.ensureQueryData({
+         queryKey: ['feature-data'],
+         queryFn: fetchFeatureData,
+       })
+     },
+   })
+   
+   function FeaturePage() {
+     return <div>Feature Content</div>
+   }
+   ```
+
+## Route Parameters
+
+Use route parameters to pass data between routes:
+
+```tsx
+// Route definition with parameters
+export const Route = createFileRoute('/_authenticated/users/$userId')({
+  component: UserDetail,
+})
+
+// Accessing parameters in the component
+function UserDetail() {
+  const { userId } = Route.useParams()
+  // Use userId to fetch or display data
+}
+```
+
+## Navigation
+
+Use TanStack Router's hooks and components for navigation:
+
+```tsx
+// Imperative navigation
+import { useNavigate } from '@tanstack/react-router'
+
+function NavigationExample() {
+  const navigate = useNavigate()
+  
+  const goToUser = (userId) => {
+    navigate({ to: '/_authenticated/users/$userId', params: { userId } })
+  }
+}
+
+// Declarative navigation
+import { Link } from '@tanstack/react-router'
+
+<Link to="/_authenticated/dashboard">Dashboard</Link>
+```
+
+## Route Guards
+
+Protect routes using the authentication state:
+
+```tsx
+// In route.tsx
+export const Route = createFileRoute('/_authenticated/feature')({
+  beforeLoad: async ({ context, location }) => {
+    const isAuthenticated = !!useAuthStore.getState().auth.accessToken
+    
+    if (!isAuthenticated) {
+      throw redirect({
+        to: '/sign-in',
+        search: { redirect: location.href },
+      })
+    }
+  },
+})
+```
+
+## Best Practices
+
+1. **Consistent Route Naming**:
+   - Use kebab-case for route paths
+   - Use descriptive names for routes
+
+2. **Structured Loading**:
+   - Use loaders to prefetch necessary data
+   - Handle loading states appropriately
+
+3. **Error Handling**:
+   - Add error boundaries for route-specific errors
+   - Redirect to error pages when appropriate
+
+4. **Code Splitting**:
+   - Leverage the automatic code splitting provided by TanStack Router
+   - Keep route components focused on their specific functionality 

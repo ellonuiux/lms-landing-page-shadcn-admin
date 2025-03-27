@@ -1,0 +1,165 @@
+---
+description: Code quality guidelines and best practices for the frontend
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: true
+---
+
+# Code Quality and Best Practices
+
+Guidelines for maintaining high-quality code in the frontend application.
+
+## TypeScript Usage
+
+1. **Type Definitions**:
+   - Define proper interfaces and types for all data structures
+   - Export types and interfaces for reuse
+   - Use strict typing rather than `any`
+
+2. **Type Safety**:
+   - Avoid type assertions (`as`) unless absolutely necessary
+   - Use union types for variables that can have multiple types
+   - Define proper return types for functions
+
+Example:
+```tsx
+// Good practice
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user' | 'guest';
+}
+
+function getUser(id: string): Promise<User> {
+  // implementation
+}
+
+// Avoid
+function getUser(id: any): any {
+  // implementation
+}
+```
+
+## Component Organization
+
+1. **Component Props**:
+   - Define and document props using TypeScript interfaces
+   - Use default props when appropriate
+   - Make props optional only when they're truly optional
+
+2. **Code Structure**:
+   - Keep components focused on a single responsibility
+   - Extract reusable logic into custom hooks
+   - Keep files under 300 lines for maintainability
+
+## Error Handling
+
+1. **UI Error Handling**:
+   - Use error boundaries for component errors
+   - Display user-friendly error messages
+   - Log errors for debugging
+
+2. **API Error Handling**:
+   - Handle network errors gracefully
+   - Show appropriate error messages to users
+   - Implement retry mechanisms where appropriate
+
+## Performance Optimization
+
+1. **Rendering Optimization**:
+   - Use memoization with `useMemo` and `useCallback`
+   - Implement proper dependency arrays in hooks
+   - Avoid unnecessary re-renders
+
+2. **Large Data Sets**:
+   - Use virtualization for long lists
+   - Implement pagination for data tables
+   - Lazy load data when appropriate
+
+3. **Bundle Size**:
+   - Use code splitting and lazy loading
+   - Monitor and optimize bundle size
+   - Import only what you need from libraries
+
+## Code Formatting and Linting
+
+1. **ESLint**:
+   - Follow the project's ESLint configuration
+   - Resolve all linting errors before committing
+   - Use the ESLint plugin for your editor
+
+2. **Prettier**:
+   - Use Prettier for consistent code formatting
+   - Configure your editor to format on save
+   - Follow the project's Prettier configuration
+
+## Testing Guidelines
+
+1. **Component Testing**:
+   - Write tests for core components
+   - Test component interactions
+   - Test edge cases and error states
+
+2. **Hook Testing**:
+   - Test custom hooks independently
+   - Verify hook behavior with different inputs
+   - Test side effects
+
+3. **Accessibility Testing**:
+   - Ensure proper keyboard navigation
+   - Use correct ARIA attributes
+   - Test with screen readers when possible
+
+## Import Order
+
+Follow a consistent import order in all files:
+
+1. React imports
+2. External library imports
+3. Project imports (using alias paths)
+4. Relative imports
+5. Asset/CSS imports
+
+Example:
+```tsx
+// 1. React imports
+import { useState, useEffect } from 'react'
+
+// 2. External library imports
+import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+
+// 3. Project imports (using alias paths)
+import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/stores/authStore'
+
+// 4. Relative imports
+import { UserCard } from './UserCard'
+
+// 5. Asset/CSS imports
+import './styles.css'
+```
+
+## Documentation
+
+1. **Code Comments**:
+   - Comment complex logic and algorithms
+   - Use JSDoc for documenting functions and components
+   - Keep comments updated when code changes
+
+2. **README and Documentation**:
+   - Keep project documentation up to date
+   - Document APIs and important concepts
+   - Include examples for complex features
+
+## Security Best Practices
+
+1. **User Input**:
+   - Validate and sanitize all user inputs
+   - Use proper encoding for displaying user-generated content
+   - Prevent XSS attacks
+
+2. **Authentication**:
+   - Store tokens securely
+   - Implement proper logout functionality
+   - Handle session expiration gracefully 

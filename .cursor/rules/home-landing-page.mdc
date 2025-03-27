@@ -1,0 +1,95 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Home Landing Page Guidelines
+
+Hướng dẫn phát triển trang chủ (landing page) cho ứng dụng LMS với đầy đủ các thành phần theo yêu cầu.
+
+## Cấu trúc Trang Chủ
+
+Trang chủ phải bao gồm đầy đủ các thành phần sau, được sắp xếp theo thứ tự hợp lý:
+
+### 1. Hero Section
+- Thiết kế phần hiển thị trang nhất với hình ảnh/video chất lượng cao
+- Tiêu đề thu hút, thông điệp ngắn gọn và rõ ràng
+- Nút call-to-action (CTA) nổi bật dẫn đến trang đăng ký hoặc trang khóa học
+- Đảm bảo responsive trên tất cả các thiết bị
+
+### 2. Phần Giới Thiệu về Trung Tâm
+- Trình bày thông tin tổng quan về trung tâm đào tạo
+- Bao gồm các nội dung về sứ mệnh, tầm nhìn của trung tâm
+- Nêu bật giá trị cốt lõi và lịch sử phát triển
+- Mô tả thành tựu nổi bật của trung tâm
+
+### 3. Hiển Thị Chứng Nhận từ Đối Tác
+- Trưng bày logo từ các đối tác doanh nghiệp
+- Hiển thị chứng nhận từ các tổ chức giáo dục uy tín
+- Sắp xếp hợp lý và thẩm mỹ
+- Tăng độ tin cậy và chứng minh chất lượng đào tạo
+
+### 4. Phần "Tại Sao Chọn Chúng Tôi"
+- Nêu bật các điểm mạnh của trung tâm so với đối thủ
+- Liệt kê lợi thế cạnh tranh với số liệu minh họa
+- Sử dụng thống kê và dữ liệu thực để thuyết phục người dùng
+- Thiết kế trực quan và dễ hiểu
+
+### 5. Phân Loại Khóa Học Theo Ngành
+- Hiển thị các nhóm khóa học được phân loại theo ngành nghề, lĩnh vực
+- Thiết kế giúp người dùng dễ dàng tìm kiếm khóa học phù hợp
+- Mỗi danh mục có hình ảnh đại diện và mô tả ngắn gọn
+- Có liên kết đến trang chi tiết của từng danh mục
+
+### 6. Hiển Thị Khóa Học Nổi Bật
+- Trình bày các khóa học nổi bật, bán chạy hoặc mới ra mắt tại vị trí dễ thấy trên trang chủ
+- Mỗi khóa học hiển thị kèm hình ảnh minh họa chất lượng cao
+- Hiển thị thông tin giá và đánh giá sơ lược từ học viên
+- Thiết kế dạng grid hoặc carousel cho phép xem nhiều khóa học
+- Có nút đăng ký/xem chi tiết cho từng khóa học
+
+### 7. Hiển Thị Đánh Giá từ Học Viên
+- Trưng bày các đánh giá và nhận xét từ học viên đã hoàn thành khóa học
+- Bao gồm video testimonial khi có thể
+- Hiển thị thông tin và hình ảnh cá nhân của học viên (có sự đồng ý)
+- Thiết kế carousel hoặc grid để hiển thị nhiều đánh giá
+
+### 8. Mô Tả Quy Trình Đăng Ký
+- Trình bày quy trình đăng ký từ A-Z với sơ đồ trực quan
+- Các bước đơn giản, rõ ràng và dễ hiểu
+- Giúp học viên tiềm năng hiểu được cách thức tham gia
+- Cung cấp liên kết đến trang đăng ký tại cuối phần này
+
+### 9. Phần FAQ (Câu Hỏi Thường Gặp)
+- Hiển thị danh sách câu hỏi thường gặp và câu trả lời
+- Phân loại theo chủ đề để dễ dàng tìm kiếm
+- Thiết kế dạng dropdown/accordion để tiết kiệm không gian
+- Cung cấp liên kết để liên hệ nếu không tìm thấy câu trả lời
+
+### 10. CTA "Sẵn Sàng Bắt Đầu"
+- Đặt các nút call-to-action nổi bật tại vị trí chiến lược
+- Khuyến khích người dùng đăng ký, liên hệ hoặc tìm hiểu thêm
+- Sử dụng ngôn ngữ thúc đẩy hành động
+- Thiết kế nổi bật với màu sắc tương phản
+
+### 11. Footer Thông Tin
+- Thiết kế footer với đầy đủ thông tin liên hệ
+- Bao gồm địa chỉ, số điện thoại, email
+- Liên kết đến trang mạng xã hội của trung tâm
+- Thông tin về chính sách và giấy phép hoạt động
+
+## Nguyên Tắc Thiết Kế
+
+1. **Nhất quán**: Đảm bảo thiết kế nhất quán về màu sắc, font chữ và bố cục
+2. **Responsive**: Trang phải hiển thị tốt trên tất cả thiết bị (desktop, tablet, mobile)
+3. **Tốc độ**: Tối ưu hóa hình ảnh và tài nguyên để đảm bảo trang tải nhanh
+4. **Khả năng tiếp cận**: Tuân thủ các tiêu chuẩn WCAG để đảm bảo tất cả người dùng có thể truy cập
+5. **Tối ưu SEO**: Cấu trúc HTML đúng, meta tags phù hợp, alt text cho hình ảnh
+
+## Triển Khai
+
+- Sử dụng components của shadcn UI khi có thể
+- Tận dụng TailwindCSS để styling các components
+- Xây dựng các components tái sử dụng cho từng phần của trang chủ
+- Đảm bảo performance tốt với React 19 
+

@@ -14,12 +14,15 @@ export const Route = createRootRouteWithContext<{
       <>
         <Outlet />
         <Toaster />
+        {/* Ẩn các DevTools để không hiển thị trên landing page */}
+        {/* 
         {import.meta.env.MODE === 'development' && (
           <>
             <ReactQueryDevtools buttonPosition='bottom-left' />
             <TanStackRouterDevtools position='bottom-right' />
           </>
         )}
+        */}
       </>
     )
   },

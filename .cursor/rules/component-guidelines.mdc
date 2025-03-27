@@ -1,0 +1,80 @@
+---
+description: Guidelines for component development and usage
+globs: src/components/**/*.tsx, src/components/**/*.ts
+alwaysApply: true
+---
+
+# Component Guidelines
+
+## Use Existing Component Library
+
+1. **shadcn/ui Components** - Our core UI components are based on shadcn/ui, located in `src/components/ui/`:
+   - Use existing components (`Button`, `Input`, `Select`, `Card`, etc.) before creating new ones
+   - Follow the established component patterns and props
+   - Refer to Radix UI documentation for advanced usage
+
+2. **Custom Components** - Use and extend our custom components:
+   - Layout components (`Header`, `AppSidebar`, etc.) 
+   - Utility components (`ConfirmDialog`, `PinInput`, etc.)
+
+## Component Development
+
+When creating new components:
+
+1. **Structure**:
+   - Use TypeScript for type safety
+   - Create functional components with hooks
+   - Export types and interfaces
+   - Document props with JSDoc comments
+
+2. **Organization**:
+   - One component per file for core components
+   - Group related components in dedicated directories
+   - Export components through index files when appropriate
+
+3. **Naming Conventions**:
+   - Use PascalCase for component names and files
+   - Use camelCase for functions, variables, and props
+   - Use descriptive, semantic names
+
+## Component Props
+
+1. **Type Safety**:
+   - Define props using interfaces or type aliases
+   - Use discriminated unions for complex props
+   - Make props optional only when truly optional
+
+2. **Default Props**:
+   - Set sensible defaults for optional props
+   - Document default values in JSDoc comments
+
+3. **Children Props**:
+   - Use `React.ReactNode` for children props
+   - Use composition over configuration when possible
+
+## Component Styling
+
+1. **Use Tailwind Classes**:
+   - Use Tailwind utility classes directly in components
+   - Use the `cn()` utility for conditional classes
+   - Follow the project's color system and spacing scale
+
+2. **Variants**:
+   - Use `cva()` for component variants
+   - Define reusable variants for consistent UI
+
+3. **Responsive Design**:
+   - Use Tailwind's responsive prefixes
+   - Design mobile-first, then enhance for larger screens
+
+## Testing Components
+
+1. **Component Testing**:
+   - Test core functionality
+   - Test component variants
+   - Test accessibility
+
+2. **Accessibility**:
+   - Ensure proper keyboard navigation
+   - Use appropriate ARIA attributes
+   - Test with screen readers when possible 

@@ -1,0 +1,107 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Courses Page Guidelines
+
+Hướng dẫn phát triển trang Danh sách khóa học (Courses) cho ứng dụng LMS với đầy đủ các tính năng theo yêu cầu.
+
+## Tính năng chính
+
+Trang Danh sách khóa học (Courses) phải bao gồm đầy đủ các tính năng sau:
+
+### 1. Danh sách khóa học chi tiết
+- Hiển thị danh sách đầy đủ các khóa học với thông tin chi tiết
+- Mỗi khóa học hiển thị đầy đủ: tên, hình ảnh, giá, thời lượng, cấp độ, giảng viên, đánh giá
+- Hỗ trợ phân trang hoặc infinite scrolling khi số lượng khóa học nhiều
+- Thiết kế responsive, hiển thị dạng grid hoặc list tùy theo kích thước màn hình
+
+### 2. Trang chi tiết khóa học
+- Tạo trang riêng biệt cho từng khóa học với URL dễ nhớ (slug)
+- Hiển thị mô tả đầy đủ về khóa học, bao gồm:
+  - Mục tiêu khóa học
+  - Nội dung học chi tiết (syllabus)
+  - Yêu cầu đầu vào (prerequisites)
+  - Lợi ích sau khi hoàn thành
+  - Thông tin về giảng viên
+  - Lịch khai giảng chi tiết
+  - Học phí và các chi phí khác (nếu có)
+- Thiết kế với các section rõ ràng, dễ đọc
+
+### 3. Bộ lọc tìm kiếm khóa học
+- Tích hợp bộ lọc đa tiêu chí cho phép người dùng lọc khóa học theo:
+  - Ngành/lĩnh vực
+  - Cấp độ (beginner, intermediate, advanced)
+  - Giá (miễn phí, trả phí, khoảng giá)
+  - Thời lượng (ngắn, trung bình, dài)
+  - Hình thức học (online, offline, hybrid)
+  - Lịch học (buổi sáng, tối, cuối tuần)
+  - Đánh giá (xếp hạng sao)
+- Lọc kết hợp nhiều tiêu chí cùng lúc
+- Hiển thị số lượng kết quả lọc được
+- Lưu trạng thái lọc vào URL để có thể chia sẻ kết quả tìm kiếm
+
+### 4. Tìm kiếm khóa học thông minh
+- Tích hợp công cụ tìm kiếm khóa học theo từ khóa
+- Hỗ trợ tìm kiếm theo tên khóa học, từ khóa liên quan, tên giảng viên
+- Hiển thị gợi ý tìm kiếm khi người dùng nhập
+- Hỗ trợ tìm kiếm mờ (fuzzy search) cho phép tìm kiếm kể cả khi gõ sai chính tả nhẹ
+
+### 5. Hiển thị lịch khai giảng
+- Hiển thị lịch khai giảng của các khóa học sắp tới
+- Thông tin hiển thị bao gồm:
+  - Thời gian khai giảng
+  - Địa điểm học
+  - Số lượng học viên còn nhận
+  - Tình trạng đăng ký (còn chỗ, sắp đầy, đã đầy)
+- Có thể lọc và sắp xếp theo ngày khai giảng
+- Cho phép đăng ký trực tiếp từ lịch khai giảng
+
+### 6. Xem thông tin chi tiết khóa học
+- Cho phép người dùng xem thông tin chi tiết về từng khóa học
+- Hiển thị mô tả chi tiết với định dạng phong phú (rich text)
+- Hỗ trợ hiển thị video giới thiệu, ảnh minh họa
+- Hiển thị danh sách bài học/module (preview nếu có thể)
+- Hỗ trợ các FAQ liên quan đến khóa học
+
+### 7. Thông tin giảng viên
+- Hiển thị thông tin chi tiết về giảng viên phụ trách khóa học
+- Thông tin bao gồm:
+  - Hồ sơ chuyên môn và kinh nghiệm
+  - Lĩnh vực chuyên môn
+  - Thành tựu nổi bật
+  - Đánh giá từ học viên cũ
+- Liên kết đến trang profile đầy đủ của giảng viên
+- Hiển thị các khóa học khác do giảng viên giảng dạy
+
+## Thiết kế UI/UX
+
+1. **Tổ chức thông tin**:
+   - Bố cục rõ ràng, dễ đọc
+   - Phân cấp thông tin hợp lý
+   - Tránh quá tải thông tin trên một trang
+
+2. **Responsive design**:
+   - Hiển thị tốt trên mọi thiết bị (desktop, tablet, mobile)
+   - Tối ưu hóa bộ lọc trên thiết bị di động
+   - Đảm bảo khả năng đọc và thao tác trên màn hình nhỏ
+
+3. **Khả năng tiếp cận**:
+   - Tuân thủ các tiêu chuẩn WCAG 2.1
+   - Hỗ trợ trình đọc màn hình
+   - Đảm bảo tương phản màu sắc phù hợp
+
+4. **Hiệu suất**:
+   - Tối ưu hóa tốc độ tải trang
+   - Lazy loading cho hình ảnh
+   - Sử dụng skeleton loading khi dữ liệu đang được tải
+
+## Triển khai kỹ thuật
+
+- Sử dụng React Query để quản lý state và data fetching
+- Implement filtering với URL params để hỗ trợ sharing và bookmarking
+- Xây dựng components tái sử dụng cho các card khóa học
+- Sử dụng các UI components từ shadcn UI
+- Tận dụng TailwindCSS cho styling responsive
+- Implement lazy loading và code splitting để tối ưu performance 

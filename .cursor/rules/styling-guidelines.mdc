@@ -1,0 +1,153 @@
+---
+description: Guidelines for styling and CSS usage in the application
+globs: src/**/*.css, src/**/*.tsx
+alwaysApply: false
+---
+
+# Styling Guidelines
+
+## Tailwind CSS Approach
+
+The application uses Tailwind CSS for styling. Follow these guidelines for consistent styling:
+
+1. **Use Tailwind Utility Classes Directly**:
+
+```tsx
+<div className="flex items-center gap-2 p-4 bg-background text-foreground">
+  <Button className="bg-primary text-primary-foreground">Click Me</Button>
+</div>
+```
+
+2. **Use Theme Variables via Tailwind Classes**:
+   - Background: `bg-background`, `bg-card`
+   - Text: `text-foreground`, `text-muted-foreground`
+   - Borders: `border-border`, `border-input`
+   - Accent colors: `bg-primary`, `text-primary-foreground`
+
+3. **Combine Classes with the `cn()` Utility**:
+
+```tsx
+import { cn } from "@/lib/utils"
+
+<div className={cn(
+  "base-styles",
+  condition && "conditional-styles",
+  className
+)}>
+  Content
+</div>
+```
+
+## Theme System
+
+The application uses a theme system based on CSS variables for a consistent look and feel:
+
+1. **Light and Dark Modes**:
+   - Support both light and dark modes
+   - Use the `dark:` prefix for dark mode styles
+   - Use the ThemeProvider to manage theme state
+
+```tsx
+<div className="bg-background dark:bg-background text-foreground dark:text-foreground">
+  Dark mode supported content
+</div>
+```
+
+2. **Color System**:
+   Colors are defined using CSS variables with HSL values:
+
+```css
+--background: 0 0% 100%;       /* Light mode background */
+--foreground: 222.2 84% 4.9%;  /* Light mode text */
+--primary: 221.2 83.2% 53.3%;  /* Primary brand color */
+--destructive: 0 84.2% 60.2%;  /* Error/delete actions */
+```
+
+## Component Styling
+
+1. **shadcn/ui Components**:
+   - Use the variants provided by shadcn/ui components
+   - Extend components with additional Tailwind classes when needed
+   - Use the class-variance-authority (cva) utility for complex variants
+
+2. **Custom Component Styling**:
+   - Create consistent styling patterns for custom components
+   - Use CSS variables for theme-dependent styles
+   - Follow the same patterns as shadcn/ui components
+
+```tsx
+// Example of component with variants
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        // Add more variants as needed
+      },
+      size: {
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-10 rounded-md px-8",
+        // Add more sizes as needed
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+```
+
+## Responsive Design
+
+1. **Mobile-First Approach**:
+   - Start with mobile design, then enhance for larger screens
+   - Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`)
+
+```tsx
+<div className="flex-col md:flex-row lg:gap-4">
+  Responsive content
+</div>
+```
+
+2. **Breakpoints**:
+   - Follow Tailwind's default breakpoints
+   - Use consistent breakpoints throughout the application
+   - Consider content when choosing breakpoints, not just device sizes
+
+## CSS Organization
+
+1. **Global Styles**:
+   - Keep global styles in `src/index.css`
+   - Use Tailwind's `@layer` directive to organize styles
+
+2. **Component-Specific Styles**:
+   - Keep component-specific styles with the component
+   - Use Tailwind classes when possible, custom CSS when necessary
+   - Use CSS modules for complex components if needed
+
+## Accessibility
+
+1. **Color Contrast**:
+   - Ensure sufficient contrast between text and background
+   - Test with accessibility tools
+   - Use semantic color variables
+
+2. **Focus States**:
+   - Always provide visible focus states
+   - Use Tailwind's `focus-visible:` prefix
+   - Test keyboard navigation
+
+3. **Responsive Text**:
+   - Ensure text is readable at all screen sizes
+   - Use relative units (rem) for font sizes
+   - Test with different zoom levels 
+description: 
+globs: 
+alwaysApply: false
+---
+ 

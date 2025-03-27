@@ -1,0 +1,590 @@
+---
+description: Hướng dẫn tạo và sử dụng mock data với MSW khi phát triển module/feature mới
+globs: frontend/src/mocks/**/*.ts, frontend/src/pages/**/*.tsx, frontend/src/hooks/**/*.ts
+alwaysApply: true
+---
+
+# Mock API Development Guidelines
+
+Hướng dẫn cách sử dụng và phát triển mock API với Mock Service Worker (MSW) khi phát triển module/feature mới. Các nguyên tắc này giúp đảm bảo quá trình phát triển frontend diễn ra độc lập với backend, hiệu quả và nhất quán.
+
+## Luồng phát triển với Mock API
+
+Khi phát triển một module hoặc tính năng mới, tuân thủ quy trình sau:
+
+1. **Xác định API Endpoints**: Thiết kế các API endpoints cần thiết cho module
+2. **Tạo Mock Data**: Tạo dữ liệu mock cho các endpoints này
+3. **Tạo API Handlers**: Tạo handlers cho các endpoints 
+4. **Tạo Custom Hooks**: Viết custom hooks sử dụng React Query để tương tác với API
+5. **Phát triển UI**: Phát triển giao diện người dùng sử dụng hooks đã tạo
+
+## Tạo Mock Data Mới
+
+### 1. Định nghĩa Types
+
+Luôn bắt đầu bằng việc định nghĩa types chặt chẽ cho dữ liệu:
+
+```typescript
+// src/types/module-name.types.ts
+export interface EntityType {
+  id: number;
+  name: string;
+  // Các properties khác
+  created_at: string;
+  updated_at?: string;
+}
+```
+
+### 2. Tạo File Data Mock
+
+Tạo file dữ liệu mock mới trong thư mục `frontend/src/mocks/data/`:
+
+```typescript
+// src/mocks/data/entity-name.data.ts
+import { EntityType } from '@/types/module-name.types';
+
+/**
+ * Dữ liệu mock cho [tên thực thể]
+ * Dùng cho việc phát triển và testing
+ */
+export const mockEntities: EntityType[] = [
+  {
+    id: 1,
+    name: 'Example Entity 1',
+    // Các thuộc tính khác với dữ liệu mẫu
+    created_at: '2023-01-01T00:00:00Z',
+  },
+  // Thêm ít nhất 10 bản ghi mẫu
+];
+```
+
+### 3. Cập Nhật Database Utility
+
+Thêm dữ liệu và phương thức xử lý vào file `frontend/src/mocks/utils/db.ts`:
+
+```typescript
+import { mockEntities } from '@/mocks/data/entity-name.data';
+
+class Database {
+  // Thêm vào các properties hiện có
+  entities = [...mockEntities];
+  
+  // Thêm các methods CRUD cơ bản
+  findEntity(id: number) {
+    return this.entities.find(entity => entity.id === id);
+  }
+  
+  createEntity(entityData: Partial<EntityType>) {
+    const newId = Math.max(0, ...this.entities.map(e => e.id)) + 1;
+    const newEntity = {
+      id: newId,
+      ...entityData,
+      created_at: new Date().toISOString()
+    };
+    this.entities.push(newEntity as EntityType);
+    return newEntity;
+  }
+  
+  updateEntity(id: number, data: Partial<EntityType>) {
+    const index = this.entities.findIndex(e => e.id === id);
+    if (index === -1) return null;
+    
+    this.entities[index] = {
+      ...this.entities[index],
+      ...data,
+      updated_at: new Date().toISOString()
+    };
+    return this.entities[index];
+  }
+  
+  deleteEntity(id: number) {
+    const index = this.entities.findIndex(e => e.id === id);
+    if (index === -1) return false;
+    
+    this.entities.splice(index, 1);
+    return true;
+  }
+}
+```
+
+## Tạo API Handlers
+
+### 1. Tạo File Handlers
+
+Tạo file handlers mới trong thư mục `frontend/src/mocks/handlers/`:
+
+```typescript
+// src/mocks/handlers/entity-name.handlers.ts
+import { http, HttpResponse, delay } from 'msw';
+import db from '@/mocks/utils/db';
+
+export const entityHandlers = [
+  // Get all entities with filtering and pagination
+  http.get('/api/v1/entities', async ({ request }) => {
+    await delay(300); // Luôn thêm độ trễ thực tế
+    
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+    
+    // Parse pagination
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    
+    // Parse filters
+    const name = searchParams.get('name') || '';
+    
+    // Apply filters
+    let filteredEntities = [...db.entities];
+    if (name) {
+      filteredEntities = filteredEntities.filter(entity => 
+        entity.name.toLowerCase().includes(name.toLowerCase())
+      );
+    }
+    
+    // Apply pagination
+    const total = filteredEntities.length;
+    const totalPages = Math.ceil(total / limit);
+    const offset = (page - 1) * limit;
+    const paginatedEntities = filteredEntities.slice(offset, offset + limit);
+    
+    return HttpResponse.json({
+      success: true,
+      data: paginatedEntities,
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          total_pages: totalPages
+        }
+      }
+    });
+  }),
+  
+  // Get entity by ID
+  http.get('/api/v1/entities/:id', async ({ params }) => {
+    await delay(200);
+    
+    const id = parseInt(params.id as string);
+    const entity = db.findEntity(id);
+    
+    if (!entity) {
+      return new HttpResponse(
+        JSON.stringify({
+          success: false,
+          message: 'Entity not found'
+        }),
+        { status: 404 }
+      );
+    }
+    
+    return HttpResponse.json({
+      success: true,
+      data: entity
+    });
+  }),
+  
+  // Create entity
+  http.post('/api/v1/entities', async ({ request }) => {
+    await delay(400);
+    
+    try {
+      const entityData = await request.json();
+      
+      // Validation
+      if (!entityData.name) {
+        return new HttpResponse(
+          JSON.stringify({
+            success: false,
+            message: 'Name is required'
+          }),
+          { status: 400 }
+        );
+      }
+      
+      const newEntity = db.createEntity(entityData);
+      
+      return HttpResponse.json({
+        success: true,
+        data: newEntity,
+        message: 'Entity created successfully'
+      }, { status: 201 });
+    } catch (error) {
+      return new HttpResponse(
+        JSON.stringify({
+          success: false,
+          message: 'Failed to create entity'
+        }),
+        { status: 500 }
+      );
+    }
+  }),
+  
+  // Update entity
+  http.put('/api/v1/entities/:id', async ({ request, params }) => {
+    await delay(300);
+    
+    try {
+      const id = parseInt(params.id as string);
+      const updates = await request.json();
+      
+      const entity = db.findEntity(id);
+      if (!entity) {
+        return new HttpResponse(
+          JSON.stringify({
+            success: false,
+            message: 'Entity not found'
+          }),
+          { status: 404 }
+        );
+      }
+      
+      const updatedEntity = db.updateEntity(id, updates);
+      
+      return HttpResponse.json({
+        success: true,
+        data: updatedEntity,
+        message: 'Entity updated successfully'
+      });
+    } catch (error) {
+      return new HttpResponse(
+        JSON.stringify({
+          success: false,
+          message: 'Failed to update entity'
+        }),
+        { status: 500 }
+      );
+    }
+  }),
+  
+  // Delete entity
+  http.delete('/api/v1/entities/:id', async ({ params }) => {
+    await delay(300);
+    
+    try {
+      const id = parseInt(params.id as string);
+      
+      const entity = db.findEntity(id);
+      if (!entity) {
+        return new HttpResponse(
+          JSON.stringify({
+            success: false,
+            message: 'Entity not found'
+          }),
+          { status: 404 }
+        );
+      }
+      
+      db.deleteEntity(id);
+      
+      return HttpResponse.json({
+        success: true,
+        message: 'Entity deleted successfully'
+      });
+    } catch (error) {
+      return new HttpResponse(
+        JSON.stringify({
+          success: false,
+          message: 'Failed to delete entity'
+        }),
+        { status: 500 }
+      );
+    }
+  })
+];
+
+export default entityHandlers;
+```
+
+### 2. Đăng ký Handlers trong handlers.ts
+
+```typescript
+// src/mocks/handlers.ts
+import { entityHandlers } from '@/mocks/handlers/entity-name.handlers';
+
+export const handlers = [
+  // Existing handlers
+  ...entityHandlers,
+];
+```
+
+## Tạo Custom Hooks để Sử dụng API
+
+Tạo hooks trong thư mục `frontend/src/hooks/module-name/`:
+
+```typescript
+// src/hooks/module-name/useEntities.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { EntityType } from '@/types/module-name.types';
+
+// Base URL for API endpoints
+const API_URL = '/api/v1/entities';
+
+// Fetch all entities with filtering
+export const useEntities = (params = {}) => {
+  return useQuery({
+    queryKey: ['entities', params],
+    queryFn: async () => {
+      const query = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          query.append(key, String(value));
+        }
+      });
+      
+      const response = await axios.get(`${API_URL}?${query}`);
+      return response.data;
+    }
+  });
+};
+
+// Fetch a single entity by ID
+export const useEntity = (id: number) => {
+  return useQuery({
+    queryKey: ['entity', id],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/${id}`);
+      return response.data;
+    },
+    enabled: !!id
+  });
+};
+
+// Create a new entity
+export const useCreateEntity = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: Partial<EntityType>) => {
+      const response = await axios.post(API_URL, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entities'] });
+    }
+  });
+};
+
+// Update an existing entity
+export const useUpdateEntity = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<EntityType> }) => {
+      const response = await axios.put(`${API_URL}/${id}`, data);
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['entities'] });
+      queryClient.invalidateQueries({ queryKey: ['entity', variables.id] });
+    }
+  });
+};
+
+// Delete an entity
+export const useDeleteEntity = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const response = await axios.delete(`${API_URL}/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entities'] });
+    }
+  });
+};
+```
+
+## Sử dụng Hooks trong Components
+
+```tsx
+import { useEntities, useCreateEntity } from '@/hooks/module-name/useEntities';
+import { Button } from '@/components/ui/button';
+import { DataGrid } from '@/components/data-grid';
+
+function EntityListPage() {
+  const { data, isLoading, error } = useEntities({ limit: 10, page: 1 });
+  const createMutation = useCreateEntity();
+  
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading entities</div>;
+  
+  const handleCreate = () => {
+    createMutation.mutate({
+      name: 'New Entity',
+      // Other properties
+    });
+  };
+  
+  return (
+    <div>
+      <h1>Entities</h1>
+      <Button onClick={handleCreate}>Create New</Button>
+      
+      <DataGrid 
+        data={data?.data || []} 
+        columns={[
+          { accessorKey: 'id', header: 'ID' },
+          { accessorKey: 'name', header: 'Name' },
+          // Other columns
+        ]}
+      />
+    </div>
+  );
+}
+```
+
+## Quy tắc và Best Practices
+
+1. **Tính Hiện Thực của Dữ Liệu**
+   - Tạo dữ liệu mẫu giống với dữ liệu thực tế càng nhiều càng tốt
+   - Mỗi entity nên có ít nhất 10 mẫu để đảm bảo hiển thị pagination đúng
+   - Sử dụng Faker.js để tạo dữ liệu mẫu ngẫu nhiên nếu cần
+
+2. **Đảm Bảo Tính Nhất Quán**
+   - Đảm bảo cấu trúc response API giống với API thật
+   - Cấu trúc data và relationship giữa các entities phải chính xác
+   - Response format phải nhất quán giữa các endpoints: `{ success, data, meta?, message? }`
+
+3. **Xử Lý Edge Cases**
+   - Thêm handlers cho cả trường hợp thành công và thất bại
+   - Xử lý validation errors
+   - Sử dụng status codes phù hợp (200, 201, 400, 404, 500)
+
+4. **Các Tình Huống Đặc Biệt**
+   - Mô phỏng những tình huống thực tế như loading lâu hoặc timeout
+   - Thêm độ trễ giống thực tế (`200-800ms`) cho các API calls
+   - Mô phỏng phân trang (pagination), filtering và sorting
+
+5. **Cleanup và Maintenance**
+   - Xóa hoặc disable các mock APIs khi không còn cần thiết
+   - Cập nhật mock data khi schema API thay đổi
+   - Đồng bộ giữa mock API và API thật khi có thay đổi
+
+## Kiểm tra Mock API
+
+Luôn kiểm tra các mock endpoints đã tạo trước khi phát triển UI:
+
+1. **Sử dụng Dev Tools**
+   - Kiểm tra Network tab trong Chrome DevTools
+   - Xác nhận response format đúng
+
+2. **Sử dụng API Clients**
+   - Test endpoints bằng Postman hoặc Insomnia
+   - Tạo collection để dễ dàng kiểm tra lại
+
+3. **Viết Unit Tests**
+   - Viết tests cho các handlers
+   - Kiểm tra các edge cases
+
+## Ví dụ Thực Tế: Module Sản Phẩm
+
+1. **Định nghĩa Types**
+```typescript
+// src/types/product.types.ts
+export interface Product {
+  id: number;
+  name: string;
+  sku: string;
+  price: number;
+  stock: number;
+  category_id: number;
+  description?: string;
+  image_url?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface ProductFilters {
+  name?: string;
+  category_id?: number;
+  min_price?: number;
+  max_price?: number;
+  is_active?: boolean;
+}
+```
+
+2. **Tạo Mock Data**
+```typescript
+// src/mocks/data/products.data.ts
+import { Product } from '@/types/product.types';
+
+export const mockProducts: Product[] = [
+  {
+    id: 1,
+    name: 'Laptop Dell XPS 13',
+    sku: 'DELL-XPS13',
+    price: 1299.99,
+    stock: 15,
+    category_id: 1,
+    description: 'Powerful laptop for professionals',
+    image_url: 'https://example.com/images/dell-xps-13.jpg',
+    is_active: true,
+    created_at: '2023-01-15T00:00:00Z'
+  },
+  // Thêm các sản phẩm khác...
+];
+```
+
+3. **Tạo API Handlers**
+```typescript
+// src/mocks/handlers/products.handlers.ts
+import { http, HttpResponse, delay } from 'msw';
+import db from '@/mocks/utils/db';
+
+export const productsHandlers = [
+  http.get('/api/v1/products', async ({ request }) => {
+    await delay(300);
+    
+    const url = new URL(request.url);
+    // Logic xử lý filters và pagination
+    // ...
+    
+    return HttpResponse.json({
+      success: true,
+      data: paginatedProducts,
+      meta: { /* pagination info */ }
+    });
+  }),
+  
+  // Các handlers khác...
+];
+```
+
+4. **Tạo Custom Hooks**
+```typescript
+// src/hooks/products/useProducts.ts
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { ProductFilters } from '@/types/product.types';
+
+export const useProducts = (filters: ProductFilters = {}, page = 1, limit = 10) => {
+  return useQuery({
+    queryKey: ['products', { filters, page, limit }],
+    queryFn: async () => {
+      // Logic để gọi API với filters
+      // ...
+    }
+  });
+};
+
+// Các hooks khác...
+```
+
+5. **Sử dụng trong UI**
+```tsx
+// src/pages/products/index.tsx
+import { useProducts } from '@/hooks/products/useProducts';
+
+function ProductsPage() {
+  const [filters, setFilters] = useState({});
+  const { data, isLoading } = useProducts(filters);
+  
+  // Logic hiển thị UI
+  // ...
+}
+```

@@ -1,0 +1,157 @@
+---
+description: Guidelines for state management across the application
+globs: src/stores/**/*.ts, src/hooks/**/*.ts, src/context/**/*.tsx
+alwaysApply: true
+---
+
+# State Management Guidelines
+
+The application uses a structured approach to state management to ensure consistency and maintainability.
+
+## Zustand Store
+
+Use Zustand for global application state:
+
+```typescript
+// Example Zustand store pattern
+import { create } from 'zustand'
+
+interface StoreState {
+  count: number
+  increment: () => void
+}
+
+export const useCountStore = create<StoreState>((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+}))
+```
+
+### Store Organization
+
+1. **Separate Concerns**:
+   - Create separate stores for different domains
+   - Keep stores focused on specific functionality
+   - Avoid large, monolithic stores
+
+2. **Store Location**:
+   - Keep all stores in the `src/stores/` directory
+   - Name store files descriptively (e.g., `authStore.ts`, `settingsStore.ts`)
+
+3. **Accessing Stores**:
+   - Access stores directly using hooks throughout the application
+   - Create selector hooks for complex state extraction when needed
+
+## React Query
+
+Use TanStack Query (React Query) for server state:
+
+```typescript
+// Example React Query usage
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
+// Query hook
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+// Mutation hook
+export function useCreateUser() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    },
+  })
+}
+```
+
+### Query Organization
+
+1. **Query Keys**:
+   - Use descriptive query keys
+   - Structure keys hierarchically (`['users']`, `['user', id]`)
+   - Keep keys consistent across the application
+
+2. **Custom Hooks**:
+   - Create custom hooks for queries and mutations
+   - Encapsulate query logic within hooks
+   - Handle loading, error, and success states within hooks
+
+## React Context
+
+Use React Context for UI state and theme:
+
+```typescript
+// Example context provider pattern
+import { createContext, useContext, useState } from 'react'
+
+interface MyContextValue {
+  value: string
+  setValue: (value: string) => void
+}
+
+const MyContext = createContext<MyContextValue | undefined>(undefined)
+
+export function MyProvider({ children }: { children: React.ReactNode }) {
+  const [value, setValue] = useState('')
+  
+  return (
+    <MyContext.Provider value={{ value, setValue }}>
+      {children}
+    </MyContext.Provider>
+  )
+}
+
+export function useMyContext() {
+  const context = useContext(MyContext)
+  
+  if (context === undefined) {
+    throw new Error('useMyContext must be used within a MyProvider')
+  }
+  
+  return context
+}
+```
+
+### Context Usage
+
+1. **Context Scope**:
+   - Use context for UI state (theme, layout, etc.)
+   - Limit context size and scope
+   - Prefer Zustand for application state
+
+2. **Context Location**:
+   - Keep context providers in the `src/context/` directory
+   - Create custom hooks for consuming context
+
+## Local Component State
+
+Use React's useState and useReducer for component-specific state:
+
+```typescript
+// Simple state
+const [isOpen, setIsOpen] = useState(false)
+
+// Complex state
+const [state, dispatch] = useReducer(reducer, initialState)
+```
+
+### State Organization Guidelines
+
+1. **State Proximity**:
+   - Keep state as close as possible to where it's used
+   - Lift state only when necessary
+   - Use composition to avoid prop drilling
+
+2. **State Type**:
+   - Local UI state → useState/useReducer
+   - Shared UI state → React Context
+   - Application state → Zustand
+   - Server/API state → React Query 

@@ -1,13 +1,32 @@
 import Cookies from 'js-cookie'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { SearchProvider } from '@/context/search-context'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import SkipToMain from '@/components/skip-to-main'
+import { useAuthStore } from '@/stores/authStore'
 
 export const Route = createFileRoute('/_authenticated')({
   component: RouteComponent,
+  beforeLoad: ({ location }) => {
+    // Kiểm tra xác thực
+    const isAuthenticated = !!useAuthStore.getState().auth.accessToken
+    
+    if (!isAuthenticated) {
+      throw redirect({
+        to: '/sign-in',
+        search: { redirect: location.href },
+      })
+    }
+    
+    // Nếu đường dẫn chính xác là "/_authenticated" (không có gì phía sau), chuyển hướng đến dashboard
+    if (location.pathname === '/_authenticated') {
+      throw redirect({
+        to: '/dashboard',
+      })
+    }
+  },
 })
 
 function RouteComponent() {

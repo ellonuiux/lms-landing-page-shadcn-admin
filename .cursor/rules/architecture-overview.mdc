@@ -1,0 +1,88 @@
+---
+description: Overview of the frontend architecture and core principles
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: false
+---
+
+# Frontend Architecture Overview
+
+The frontend is built using a modern React + TypeScript stack with a component-based architecture powered by shadcn/ui components.
+
+## Directory Structure
+
+The project follows a specific structure that should be maintained across all development:
+
+```
+src/
+├── assets/          # Static assets like images and icons
+├── components/      # Reusable UI components
+│   ├── ui/          # shadcn/ui core components 
+│   └── layout/      # Layout components (header, sidebar, etc.)
+├── config/          # Configuration files
+├── context/         # React context providers
+├── features/        # Feature-specific modules
+├── hooks/           # Custom React hooks
+├── lib/             # Utility libraries
+├── routes/          # TanStack Router route definitions
+│   ├── __root.tsx   # Root route component
+│   ├── _authenticated/ # Protected routes
+│   ├── (auth)/      # Authentication routes
+│   └── (errors)/    # Error pages
+├── stores/          # Zustand state management stores
+└── utils/           # Utility functions
+```
+
+## Core Technologies
+
+1. **Framework**: React with TypeScript
+2. **Styling**: Tailwind CSS
+3. **Component Library**: shadcn/ui components (based on Radix UI)
+4. **State Management**: Zustand for global state, React Query for server state
+5. **Routing**: TanStack Router
+6. **Forms**: react-hook-form with zod validation
+7. **Data Tables**: TanStack Table
+8. **Data Visualization**: Recharts
+
+## Architecture Patterns
+
+1. **Component-Based Design**:
+   - Reusable UI components
+   - Layout components
+   - Page components
+
+2. **Context Pattern**:
+   - Theme providers
+   - Font providers
+   - Authentication contexts
+
+3. **Hook Pattern**:
+   - Data fetching hooks
+   - UI interaction hooks
+   - Utility hooks
+
+4. **Route Structure**:
+   - Root routes
+   - Protected routes with authentication
+   - Error handling routes
+
+## Core Principles
+
+1. **Separation of Concerns**:
+   - UI components are presentational
+   - Hooks handle data and logic
+   - Stores manage global state
+
+2. **DRY (Don't Repeat Yourself)**:
+   - Reuse components
+   - Share logic through hooks
+   - Use utility functions
+
+3. **Progressive Enhancement**:
+   - Core functionality first
+   - Progressive enhancement for advanced features
+   - Graceful degradation for errors
+
+4. **Consistency**:
+   - Follow established patterns
+   - Use consistent naming conventions
+   - Adhere to the style guide 

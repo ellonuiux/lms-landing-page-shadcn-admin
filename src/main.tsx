@@ -13,9 +13,11 @@ import { toast } from '@/hooks/use-toast'
 import { FontProvider } from './context/font-context'
 import { ThemeProvider } from './context/theme-context'
 import './index.css'
+import { HelmetProvider } from 'react-helmet-async'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 
+// Create query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -82,6 +84,13 @@ const router = createRouter({
   context: { queryClient },
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
+  // Tắt DevTools để ẩn biểu tượng TanStack Router
+  defaultDevelopmentOptions: {
+    wrapper: {
+      useEnableDebug: false, // Tắt chế độ debug  
+      useShowDevTools: false // Ẩn DevTools component
+    }
+  }
 })
 
 // Register the router instance for type safety
@@ -93,17 +102,35 @@ declare module '@tanstack/react-router' {
 
 // Render the app
 const rootElement = document.getElementById('root')!
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-          <FontProvider>
-            <RouterProvider router={router} />
-          </FontProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  )
+
+const renderApp = () => {
+  if (!rootElement.innerHTML) {
+    const root = ReactDOM.createRoot(rootElement)
+    root.render(
+      <StrictMode>
+        <HelmetProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+              <FontProvider>
+                <RouterProvider router={router} />
+              </FontProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </HelmetProvider>
+      </StrictMode>
+    )
+  }
+}
+
+renderApp()
+
+// Đăng ký xử lý HMR
+if (import.meta.hot) {
+  import.meta.hot.accept(['./routeTree.gen'], (newModules) => {
+    if (newModules) {
+      // Cập nhật routeTree trong router
+      const newRouteTree = newModules[0].routeTree
+      router.setRoutes(newRouteTree)
+    }
+  })
 }

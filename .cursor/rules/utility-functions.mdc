@@ -1,0 +1,166 @@
+---
+description: Guidelines for utility functions and helpers across the application
+globs: src/utils/**/*.ts, src/lib/**/*.ts
+alwaysApply: true
+---
+
+# Utility Functions Guidelines
+
+The application uses various utility functions to promote code reuse and maintainability. This guide outlines best practices for creating and using utility functions.
+
+## Core Utilities
+
+### 1. Common Utilities (`src/lib/utils.ts`)
+
+The core utilities include:
+
+```tsx
+// Example of common utility functions
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+// Combines class names and handles Tailwind conflicts
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+// Format currency values
+export function formatCurrency(value: number, currency = 'USD') {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  }).format(value)
+}
+
+// Format date values
+export function formatDate(date: Date | string, format = 'medium') {
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  
+  const options: Intl.DateTimeFormatOptions = 
+    format === 'short' ? { month: 'numeric', day: 'numeric', year: '2-digit' } :
+    format === 'medium' ? { month: 'short', day: 'numeric', year: 'numeric' } :
+    { month: 'long', day: 'numeric', year: 'numeric' }
+    
+  return new Intl.DateTimeFormat('en-US', options).format(dateObj)
+}
+```
+
+### 2. Feature-Specific Utilities
+
+Organize domain-specific utilities in dedicated files:
+
+- `validation.ts` - Input validation helpers
+- `formatting.ts` - Text and data formatting
+- `storage.ts` - Local storage management
+
+## Creating Utility Functions
+
+### 1. Function Structure
+
+Follow these principles when creating utility functions:
+
+- **Pure Functions**: Create functions with no side effects when possible
+- **Single Responsibility**: Each function should do one thing well
+- **Type Safety**: Use proper TypeScript typing for parameters and return values
+- **Error Handling**: Handle edge cases and potential errors gracefully
+
+```tsx
+// Good utility function example
+export function truncateText(text: string, maxLength: number): string {
+  if (!text) return ''
+  if (text.length <= maxLength) return text
+  
+  return `${text.slice(0, maxLength)}...`
+}
+```
+
+### 2. Naming Conventions
+
+Use clear, descriptive names for utility functions:
+
+- Use camelCase for function names
+- Use verbs to describe actions (e.g., `formatDate`, `validateEmail`)
+- Be specific about what the function does
+- Don't abbreviate names unless very common
+
+### 3. Documentation
+
+Document utility functions thoroughly:
+
+```tsx
+/**
+ * Truncates text to a specified maximum length and adds ellipsis
+ * 
+ * @param text - The text to truncate
+ * @param maxLength - Maximum length before truncation
+ * @returns Truncated text with ellipsis if needed
+ * 
+ * @example
+ * truncateText("This is a long text", 10) // "This is a..."
+ */
+export function truncateText(text: string, maxLength: number): string {
+  // Implementation
+}
+```
+
+## Using Utility Functions
+
+### 1. Import Strategy
+
+Import utilities consistently:
+
+```tsx
+// Preferred import style
+import { cn, formatDate } from '@/lib/utils'
+
+// For feature-specific utilities
+import { validateEmail } from '@/utils/validation'
+```
+
+### 2. Organization
+
+- Keep general-purpose utilities in `src/lib/utils.ts`
+- Group related utilities in feature-specific files in `src/utils/`
+- Avoid duplicating existing utilities
+
+## Common Utility Categories
+
+### 1. String Manipulation
+
+Functions for working with text:
+
+- Text formatting
+- String validation
+- Case conversion
+
+### 2. Data Transformation
+
+Functions for transforming data:
+
+- Format conversion
+- Data normalization
+- Collection manipulation
+
+### 3. DOM Utilities
+
+Functions for working with the DOM:
+
+- Element manipulation
+- Event handling
+- Browser detection
+
+### 4. Security Helpers
+
+Functions for security concerns:
+
+- Input sanitization
+- Authentication helpers
+- Permission checking
+
+## Testing Utilities
+
+Always test utility functions thoroughly:
+
+- Test edge cases (empty inputs, null values, etc.)
+- Test performance for functions used frequently
+- Create test helpers for common testing patterns 

@@ -1,0 +1,18 @@
+# Edulight Website Robots.txt
+# Cập nhật: 27/03/2025
+
+User-agent: *
+Allow: /
+
+# Không cho crawl các trang admin và authentication
+Disallow: /admin/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Không cho crawl API
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://www.edulight.vn/sitemap.xml
