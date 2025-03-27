@@ -1,22 +1,22 @@
-# Shadcn Admin Dashboard
+# Edulight LMS Landing Page
 
-Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
+Landing page for Edulight online learning platform, built with Vietnamese interface, SEO optimization, and responsive design. The project uses Shadcn UI and Vite.
 
 ![alt text](public/images/shadcn-admin.png)
 
-I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from ShadcnUI examples.
-
-> This is not a starter project (template) though. I'll probably make one in the future.
+This project is a landing page for an online learning platform (LMS) with all the necessary components such as hero section, navbar, and course search form. The interface is designed with a modern, minimalist style and fully supports Vietnamese.
 
 ## Features
 
+- Bilingual interface (Vietnamese-English)
 - Light/dark mode
-- Responsive
-- Accessible
-- With built-in Sidebar component
-- Global Search Command
-- 10+ pages
-- Extra custom components
+- Responsive on all devices
+- Integration of "Be Vietnam Pro" font specifically for Vietnamese
+- SEO optimization with meta tags, schema markup, sitemap.xml, and robots.txt
+- Accessibility optimization according to WCAG standards
+- Course search form with category dropdown
+- Responsive navbar with mobile menu
+- Hero section with image and call-to-action
 
 ## Tech Stack
 
@@ -32,35 +32,37 @@ I've been creating dashboard UIs at work and for my personal projects. I always 
 
 **Icons:** [Tabler Icons](https://tabler.io/icons)
 
-## Run Locally
+**SEO:** [React Helmet Async](https://www.npmjs.com/package/react-helmet-async)
+
+## Installation and Usage
 
 Clone the project
 
 ```bash
-  git clone https://github.com/satnaing/shadcn-admin.git
+  git clone https://github.com/earnbaseio/lms-landing-page-shadcn-admin.git
 ```
 
-Go to the project directory
+Navigate to the project directory
 
 ```bash
-  cd shadcn-admin
+  cd lms-landing-page-shadcn-admin
 ```
 
 Install dependencies
 
 ```bash
-  pnpm install
+  npm install
 ```
 
-Start the server
+Start the development server
 
 ```bash
-  pnpm run dev
+  npm run dev
 ```
 
-## Author
+## Authors
 
-Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
+Developed by EarnBase Team, [@ellonuiux](https://github.com/ellonuiux) (based on the original template by [@satnaing](https://github.com/satnaing))
 
 ## License
 
